@@ -1,4 +1,4 @@
-package com.matienzoShop.celulares.model;
+package com.matienzoShop.celulares.celular.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -28,21 +28,33 @@ public class Celular {
     private Long id;
 
     @NotBlank(message = "La marca no puede estar vacía")
+    @Column(columnDefinition = "VARCHAR(255)", nullable = false)
     private String marca;
+
     @NotBlank(message = "El modelo es obligatorio")
+    @Column(columnDefinition = "VARCHAR(255)", nullable = false)
     private String modelo;
 
+    @Column(columnDefinition = "VARCHAR(50)")
     private String color;
+
     @Min(value =0, message = "El almacenamiento no puede ser negativo")
+    @Column(nullable = false)
     private Integer almacenamiento;
+
     @Min(value=0, message = "La batería no puede ser negativa")
     @Max(value = 100, message = "La batería no puede tener más del 100%")
+    @Column(nullable = false)
     private Integer bateria;
+
     @Positive(message = "El precio debe ser mayor a 0")
+    @Column(nullable = false)
     private Double precio;
 
     private Integer stock = 1;
+
     @Size(max=255, message = "La descripción no puede superar los 255 caracteres")
+    @Column(name="descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
     public Celular (){}

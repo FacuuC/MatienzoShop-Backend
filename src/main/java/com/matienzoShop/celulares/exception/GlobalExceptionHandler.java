@@ -21,20 +21,18 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // Capta cualquier error que suceda
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGlobalException(Exception ex) {
+    public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception ex) {
 
-        // Imprimir en la consola
-        System.out.println("🛑 --- ERROR CAPTURADO EN BACKEND --- 🛑");
-        ex.printStackTrace();
+        ApiErrorResponse error = new ApiErrorResponse(
+                "INTERNAL_ERROR",
+                "Ocurrió algo inesperado",
+                null
+        );
 
-        // 2. Responder al Front
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error_type", ex.getClass().getSimpleName()); // Nos dice qué tipo de error es
-        errorResponse.put("message", ex.getMessage()); // Nos dice el mensaje técnico
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
     }
 
     // Este Handler capta el error especifico de validación al validar la lista de objetos recibidas en el postMapping
@@ -88,5 +86,32 @@ public class GlobalExceptionHandler {
         response.put("detalle", mensajeDetallado);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorResponse> handleEmailExists() {
+        ApiErrorResponse error = new ApiErrorResponse(
+                "EMAIL_ALREADY_EXISTS",
+                "El email ya está registrado",
+                "email"
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
+    }
+
+    @ExceptionHandler(NotEqualsPasswordsException.class)
+    public ResponseEntity<ApiErrorResponse> handlePasswordMismatch() {
+
+        ApiErrorResponse error = new ApiErrorResponse(
+                "PASSWORD_MISMATCH",
+                "Las contrasñas no coinciden",
+                "password"
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
     }
  }

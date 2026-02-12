@@ -1,8 +1,11 @@
-package com.matienzoShop.celulares.controller;
+package com.matienzoShop.celulares.celular.controller;
 
-import com.matienzoShop.celulares.model.Celular;
-import com.matienzoShop.celulares.service.CelularService;
+import com.matienzoShop.celulares.celular.model.Celular;
+import com.matienzoShop.celulares.celular.service.CelularService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +26,22 @@ public class CelularController {
     }
 
     @GetMapping
-    public List<Celular> listarCelulares(){
-        return celularService.listarTodos();
+    public ResponseEntity<Page<Celular>> obtenerCelulares (
+            @RequestParam (required = false) String marca,
+            @RequestParam (required = false) Integer minBateria,
+            @RequestParam (required = false) Integer maxBateria,
+            @RequestParam (required = false) Integer almacenamiento,
+            @RequestParam (required = false) String search,
+
+            @RequestParam (defaultValue = "0") int page,
+            @RequestParam (defaultValue = "10") int size
+    ){
+        Pageable pageable = PageRequest.of(page,size);
+
+        Page<Celular> paginaCelulares = celularService.obtenerCelularesFiltrados(
+                marca, minBateria, maxBateria, almacenamiento, search, pageable
+        );
+        return ResponseEntity.ok(paginaCelulares);
     }
 
     @GetMapping("/{id}")

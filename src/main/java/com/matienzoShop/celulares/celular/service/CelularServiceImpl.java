@@ -1,8 +1,10 @@
-package com.matienzoShop.celulares.service;
+package com.matienzoShop.celulares.celular.service;
 
-import com.matienzoShop.celulares.model.Celular;
-import com.matienzoShop.celulares.repository.CelularRepository;
+import com.matienzoShop.celulares.celular.model.Celular;
+import com.matienzoShop.celulares.celular.repository.CelularRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,4 +43,16 @@ public class CelularServiceImpl implements CelularService{
     public void guardarTodos(List<@Valid Celular> listaCelulares) {
         celularRepository.saveAll(listaCelulares);
     }
+
+    @Override
+    public Page<Celular> obtenerCelularesFiltrados (String marca, Integer minBat, Integer maxBat, Integer almacenamiento, String search, Pageable pageable){
+        if (marca != null && marca.trim().isEmpty()) marca = null;
+
+        if (search != null && search.trim().isEmpty()) {
+            search = null;
+        }
+
+        return celularRepository.buscarConFiltros(marca, minBat, maxBat, almacenamiento, search, pageable);
+    }
+
 }
