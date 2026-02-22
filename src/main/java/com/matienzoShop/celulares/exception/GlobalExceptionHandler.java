@@ -1,5 +1,6 @@
 package com.matienzoShop.celulares.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,11 +23,19 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception ex) {
+    public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception ex, HttpServletRequest request) {
+
+        logger.error(
+                "Unexpected error at [{} {}]: {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                ex.getMessage(),
+                ex
+        );
 
         ApiErrorResponse error = new ApiErrorResponse(
                 "INTERNAL_ERROR",
-                "Ocurrió algo inesperado",
+                "Ocurrio algo inesperado",
                 null
         );
 
@@ -89,7 +98,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ApiErrorResponse> handleEmailExists() {
+    public ResponseEntity<ApiErrorResponse> handleEmailExists(EmailAlreadyExistsException ex) {
+
+        logger.warn("Business exception: {}", ex.getMessage());
+
         ApiErrorResponse error = new ApiErrorResponse(
                 "EMAIL_ALREADY_EXISTS",
                 "El email ya está registrado",

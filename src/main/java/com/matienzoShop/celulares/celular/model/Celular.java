@@ -5,13 +5,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.ToString;
 import jakarta.validation.constraints.NotBlank;
+
+import java.math.BigDecimal;
 
 @Entity
 @Table(name="celulares")
@@ -49,7 +45,7 @@ public class Celular {
 
     @Positive(message = "El precio debe ser mayor a 0")
     @Column(nullable = false)
-    private Double precio;
+    private BigDecimal precio;
 
     private Integer stock = 1;
 
@@ -59,7 +55,7 @@ public class Celular {
 
     public Celular (){}
 
-    public Celular(Long id, String marca, String modelo, String color, Integer almacenamiento, Integer bateria, Double precio, Integer stock, String descripcion) {
+    public Celular(Long id, String marca, String modelo, String color, Integer almacenamiento, Integer bateria, BigDecimal precio, Integer stock, String descripcion) {
         this.id = id;
         this.marca = marca;
         this.modelo = modelo;
@@ -118,11 +114,11 @@ public class Celular {
         this.bateria = bateria;
     }
 
-    public @Positive(message = "El precio debe ser mayor a 0") Double getPrecio() {
+    public @Positive(message = "El precio debe ser mayor a 0") BigDecimal getPrecio() {
         return precio;
     }
 
-    public void setPrecio(@Positive(message = "El precio debe ser mayor a 0") Double precio) {
+    public void setPrecio(@Positive(message = "El precio debe ser mayor a 0") BigDecimal precio) {
         this.precio = precio;
     }
 

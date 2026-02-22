@@ -3,8 +3,11 @@ package com.matienzoShop.celulares.events.model;
 import com.matienzoShop.celulares.celular.model.Celular;
 import com.matienzoShop.celulares.user.model.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.Map;
 
 @Entity
 @Table(name = "events",
@@ -20,14 +23,14 @@ public class Event {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
-    @Column(name = "anonymous_id")
+    @Column(name = "anonymous_id", nullable = true)
     private String anonymousId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "product_id", nullable = true)
     private Celular product;
 
     @Enumerated(EnumType.STRING)
@@ -38,7 +41,10 @@ public class Event {
     private Instant createdAt;
 
     @Column(columnDefinition = "jsonb")
-    private String metadata;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Object> metadata;
+
+    private String sessionId;
 
     @PrePersist
     protected void onCreate() {
@@ -93,11 +99,19 @@ public class Event {
         this.createdAt = createdAt;
     }
 
-    public String getMetadata() {
+    public Map<String, Object> getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(String metadata) {
+    public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }

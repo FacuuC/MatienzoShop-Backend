@@ -6,9 +6,9 @@ import com.matienzoShop.celulares.auth.dto.AuthResponse;
 import com.matienzoShop.celulares.auth.dto.LoginRequest;
 import com.matienzoShop.celulares.auth.dto.RegisterRequest;
 import com.matienzoShop.celulares.exception.NotEqualsPasswordsException;
+import com.matienzoShop.celulares.security.JwtService;
 import com.matienzoShop.celulares.user.model.User;
 import com.matienzoShop.celulares.user.repository.UserRepository;
-import com.matienzoShop.celulares.auth.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
