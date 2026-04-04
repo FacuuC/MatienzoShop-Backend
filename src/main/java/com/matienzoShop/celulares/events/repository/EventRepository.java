@@ -20,4 +20,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByCreatedAtBetween(Instant start, Instant end);
 
     long countByProductAndEventType(Celular product, EventType eventType);
+
+    boolean existsBySessionIdAndCreatedAtAfter (String sessionId, Instant time);
 }

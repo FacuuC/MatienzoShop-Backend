@@ -110,7 +110,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse checkout(){
+    public CartResponse checkout(String sessionId){
 
         Cart cart = getCartForCurrentUser();
 
@@ -140,15 +140,26 @@ public class CartServiceImpl implements CartService {
         );
 
         EventRequestDTO request = EventRequestDTO.builder()
-                        .eventType(EventType.PURCHASE)
-                                .productId(null)
-                                        .metadata(metadata)
-                                                .build();
+                .eventType(EventType.PURCHASE)
+                .productId(null)
+                .metadata(metadata)
+                .sessionId(sessionId)
+                .build();
+
+        System.out.println(request);
 
         eventService.registerEvent(request);
         cart.getItems().clear();
         cartRepository.save(cart);
         return mapToCartResponse(cart);
+    }
+
+    @Override
+    public void clearCart() {
+        Cart cart = getCartForCurrentUser();
+
+        cart.getItems().clear();
+        cartRepository.save(cart);
     }
 
 

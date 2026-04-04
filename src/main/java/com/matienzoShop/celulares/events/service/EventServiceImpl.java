@@ -4,16 +4,16 @@ import com.matienzoShop.celulares.celular.model.Celular;
 import com.matienzoShop.celulares.celular.repository.CelularRepository;
 import com.matienzoShop.celulares.events.dto.EventRequestDTO;
 import com.matienzoShop.celulares.events.model.Event;
+import com.matienzoShop.celulares.events.model.EventCategory;
 import com.matienzoShop.celulares.events.model.EventType;
 import com.matienzoShop.celulares.events.repository.EventRepository;
 import com.matienzoShop.celulares.exception.InvalidEventException;
+import com.matienzoShop.celulares.prediction.service.PredictionService;
 import com.matienzoShop.celulares.security.SecurityUtils;
 import com.matienzoShop.celulares.user.model.User;
-import com.matienzoShop.celulares.user.repository.UserRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 
@@ -23,13 +23,16 @@ public class EventServiceImpl implements EventService{
     private final CelularRepository celularRepository;
     private final EventRepository eventRepository;
     private final SecurityUtils securityUtils;
+    private final PredictionService predictionService;
 
     public EventServiceImpl (EventRepository eventRepository,
                              CelularRepository celularRepository,
-                             SecurityUtils securityUtils){
+                             SecurityUtils securityUtils,
+                             PredictionService predictionService){
         this.eventRepository = eventRepository;
         this.celularRepository = celularRepository;
         this.securityUtils = securityUtils;
+        this.predictionService = predictionService;
     }
 
     @Override
@@ -47,6 +50,10 @@ public class EventServiceImpl implements EventService{
             if (anonymousId == null){
                 throw new InvalidEventException("Debe existir user o anonymousId");
             }
+        }
+
+        if (request.sessionId() != null && !isSessionActive(request.sessionId())){
+            createSessionStart(request, user, anonymousId);
         }
 
         Celular celular= null;
@@ -67,16 +74,54 @@ public class EventServiceImpl implements EventService{
             throw new InvalidEventException("SEARCH_QUERY requiere 'query' en metadata");
         }
 
-
         Event event = new Event();
+
         event.setEventType(request.eventType());
+        event.setEventCategory(request.eventType().getCategory());
         event.setProduct(celular);
         event.setUser(user);
         event.setAnonymousId(anonymousId);
+        event.setSessionId(request.sessionId());
         event.setMetadata(metadata);
         event.setCreatedAt(Instant.now());
 
         eventRepository.save(event);
+
+        predictionService.processEvent(
+                request.sessionId(),
+                request.eventType(),
+                request.productId()
+        );
+    }
+
+
+
+
+
+
+
+
+
+    private void createSessionStart (EventRequestDTO request, User user, String anonymousId) {
+        Event sessionEvent = new Event();
+
+        sessionEvent.setEventType(EventType.SESSION_START);
+        sessionEvent.setEventCategory(EventCategory.SYSTEM);
+        sessionEvent.setSessionId(request.sessionId());
+        sessionEvent.setUser(user);
+        sessionEvent.setAnonymousId(anonymousId);
+        sessionEvent.setCreatedAt(Instant.now());
+
+        eventRepository.save(sessionEvent);
+    }
+
+
+
+
+
+    private boolean isSessionActive (String sessionId){
+        Instant thereshold = Instant.now().minus(Duration.ofMinutes(30));
+        return eventRepository.existsBySessionIdAndCreatedAtAfter(sessionId, thereshold);
     }
 
 }

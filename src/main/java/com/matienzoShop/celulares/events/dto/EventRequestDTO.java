@@ -12,6 +12,7 @@ public record EventRequestDTO (
         EventType eventType,
         Long productId,
         String anonymousId,
+        String sessionId,
         Map<String, Object> metadata
 ) {
 
@@ -23,6 +24,7 @@ public record EventRequestDTO (
                 private EventType eventType;
                 private Long productId;
                 private String anonymousId;
+                private String sessionId;
                 private Map<String, Object> metadata;
 
                 public Builder eventType (EventType eventType){
@@ -45,11 +47,17 @@ public record EventRequestDTO (
                         return this;
                 }
 
+                public Builder sessionId(String sessionId) {
+                        this.sessionId = sessionId;
+                        return this;
+                }
+
                 public EventRequestDTO build() {
                         return new EventRequestDTO(
                                 eventType,
                                 productId,
                                 anonymousId,
+                                sessionId,
                                 metadata
                         );
                 }

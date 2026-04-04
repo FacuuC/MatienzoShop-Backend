@@ -43,6 +43,7 @@ public class SecurityConfig {
                                 "/test-env",
                                 "/celulares/**",
                                 "/events",
+                                "/sessions/**",
                                 "/cart/**"
                         ).permitAll()
                         .anyRequest().authenticated()

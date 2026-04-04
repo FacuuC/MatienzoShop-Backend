@@ -42,8 +42,14 @@ public class CartController {
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<CartResponse> checkout(){
-        CartResponse response = cartService.checkout();
+    public ResponseEntity<CartResponse> checkout(@RequestBody String sessionId){
+        CartResponse response = cartService.checkout(sessionId);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/clear")
+    public ResponseEntity<Void> clearCart (){
+        cartService.clearCart();
+        return ResponseEntity.ok().build();
     }
 }

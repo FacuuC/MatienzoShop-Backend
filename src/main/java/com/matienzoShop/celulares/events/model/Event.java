@@ -44,6 +44,9 @@ public class Event {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> metadata;
 
+    @Enumerated(EnumType.STRING)
+    private EventCategory eventCategory;
+
     private String sessionId;
 
     @PrePersist
@@ -113,5 +116,13 @@ public class Event {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public EventCategory getEventCategory() {
+        return eventCategory;
+    }
+
+    public void setEventCategory(EventCategory eventCategory) {
+        this.eventCategory = eventCategory;
     }
 }
